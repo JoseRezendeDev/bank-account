@@ -13,6 +13,16 @@ public enum PaymentType {
         this.tax = tax;
     }
 
+    public static PaymentType getBySymbol(String symbol) {
+        for (PaymentType paymentType : PaymentType.values()) {
+            if (paymentType.getSymbol().equals(symbol)) {
+                return paymentType;
+            }
+        }
+
+        return null;
+    }
+
     public String getSymbol() {
         return this.symbol;
     }

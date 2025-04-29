@@ -3,14 +3,24 @@ package com.rezende.bank_account.account.model;
 import com.rezende.bank_account.transaction.exception.InsufficientBalanceException;
 import com.rezende.bank_account.transaction.model.PaymentType;
 import com.rezende.bank_account.transaction.model.Transaction;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Account {
-    private final long number;
+    @Id
+    private long number;
     private float balance;
-    private final List<Transaction> transactions;
+
+    @OneToMany(mappedBy = "account")
+    private List<Transaction> transactions;
+
+    public Account() {
+    }
 
     public Account(long number, float balance) {
         this.number = number;
@@ -27,7 +37,12 @@ public class Account {
         }
 
         this.balance = this.balance - totalWithTax;
+        transaction.setAccount(this);
         this.transactions.add(transaction);
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
     }
 
     public long getNumber() {

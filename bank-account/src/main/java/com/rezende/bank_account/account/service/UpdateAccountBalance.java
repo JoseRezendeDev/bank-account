@@ -14,6 +14,6 @@ public class UpdateAccountBalance {
     }
 
     public void update(Account account) {
-        accountRepository.updateBalance(account);
+        accountRepository.save(account);
     }
 }

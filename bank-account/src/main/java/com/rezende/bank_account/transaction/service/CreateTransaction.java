@@ -8,8 +8,7 @@ import com.rezende.bank_account.transaction.model.PaymentType;
 import com.rezende.bank_account.transaction.model.Transaction;
 import com.rezende.bank_account.transaction.repository.CreateTransactionRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 
 @Service
@@ -25,16 +24,17 @@ public class CreateTransaction {
         this.createTransactionRepository = createTransactionRepository;
     }
 
+    @Transactional
     public void create(CreateTransactionRequest request) {
         validateRequest(request);
 
         Account account = getAccount.getByAccountNumber(request.accountNumber());
 
-        Transaction transaction = new Transaction(account, PaymentType.valueOf(request.paymentType()), request.value());
+        Transaction transaction = new Transaction(1, PaymentType.getBySymbol(request.paymentType()), request.value());
 
         account.addTransaction(transaction);
-
-        createTransactionRepository.createTransaction(transaction);
+        // TODO EXCEPTION HANDLER PARA TRATAR EXCECOES
+        createTransactionRepository.save(transaction);
         updateAccountBalance.update(account);
     }
 
@@ -47,9 +47,9 @@ public class CreateTransaction {
             throw new IllegalArgumentException("Value greater than 0 is required!");
         }
 
-        boolean isValidPaymentType = Arrays.stream(PaymentType.values()).anyMatch(paymentType -> paymentType.getSymbol().equals(request.paymentType()));
+        PaymentType paymentType = PaymentType.getBySymbol(request.paymentType());
 
-        if (!isValidPaymentType) {
+        if (Objects.isNull(paymentType)) {
             throw new IllegalArgumentException("Invalid payment type!");
         }
     }

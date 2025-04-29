@@ -21,7 +21,7 @@ public class CreateAccount {
 
         Account account = new Account(request.accountNumber(), request.balance());
 
-        accountRepository.create(account);
+        accountRepository.save(account);
     }
 
     private void validateRequest(CreateAccountRequest request) {

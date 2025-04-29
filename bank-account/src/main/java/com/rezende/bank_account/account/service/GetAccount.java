@@ -6,7 +6,7 @@ import com.rezende.bank_account.account.model.Account;
 import com.rezende.bank_account.account.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class GetAccount {
@@ -18,14 +18,17 @@ public class GetAccount {
     }
 
     public Account getByAccountNumber(long number) {
-        Account account = accountRepository.getByAccountNumber(number);
+        Optional<Account> account = accountRepository.findById(number);
 
-        if (Objects.isNull(account)) {
+        if (account.isEmpty()) {
             throw new AccountNotFoundException("Account number " + number + " not found!");
         }
 
-//        return entityToDTO(account);
-        return account;
+        return account.get();
+    }
+
+    public AccountDTO getByAccountNumberAsDTO(long number) {
+        return entityToDTO(getByAccountNumber(number));
     }
 
     private AccountDTO entityToDTO(Account account) {
