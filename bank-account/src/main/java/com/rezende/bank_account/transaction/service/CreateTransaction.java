@@ -53,7 +53,13 @@ public class CreateTransaction {
         PaymentType paymentType = PaymentType.getBySymbol(request.paymentType());
 
         if (Objects.isNull(paymentType)) {
-            throw new IllegalArgumentException("Invalid payment type! Values can be " + Arrays.stream(PaymentType.values()).map(PaymentType::getSymbol));
+            StringBuilder possibleValues = new StringBuilder();
+
+            for (PaymentType pt : PaymentType.values()) {
+                possibleValues.append(pt.getSymbol());
+            }
+
+            throw new IllegalArgumentException("Invalid payment type! Possible values are " + possibleValues);
         }
     }
 }
