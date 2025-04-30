@@ -1,5 +1,6 @@
 package com.rezende.bank_account.transaction.controller;
 
+import com.rezende.bank_account.account.dto.AccountDTO;
 import com.rezende.bank_account.transaction.dto.CreateTransactionRequest;
 import com.rezende.bank_account.transaction.service.CreateTransaction;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +16,9 @@ public class TransactionResource {
         this.createTransaction = createTransaction;
     }
 
-//    @GetMapping
-//    public ResponseEntity<Transaction> getTransactionByNumber(@RequestParam long accountNumber) {
-//        return ResponseEntity.ok(getTransaction.ge(accountNumber));
-//    }
-
     @PostMapping
-    public ResponseEntity<Void> createTransaction(@RequestBody CreateTransactionRequest createTransactionRequest) {
-        createTransaction.create(createTransactionRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<AccountDTO> createTransaction(@RequestBody CreateTransactionRequest createTransactionRequest) {
+        AccountDTO accountDTO = createTransaction.create(createTransactionRequest);
+        return ResponseEntity.status(201).body(accountDTO);
     }
 }

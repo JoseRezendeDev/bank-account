@@ -1,31 +1,34 @@
 package com.rezende.bank_account.transaction.service;
 
+import com.rezende.bank_account.account.dto.AccountDTO;
 import com.rezende.bank_account.account.model.Account;
+import com.rezende.bank_account.account.service.CreateAccount;
 import com.rezende.bank_account.account.service.GetAccount;
-import com.rezende.bank_account.account.service.UpdateAccountBalance;
 import com.rezende.bank_account.transaction.dto.CreateTransactionRequest;
 import com.rezende.bank_account.transaction.model.PaymentType;
 import com.rezende.bank_account.transaction.model.Transaction;
 import com.rezende.bank_account.transaction.repository.CreateTransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
 import java.util.Objects;
 
 @Service
 public class CreateTransaction {
 
     private final GetAccount getAccount;
-    private final UpdateAccountBalance updateAccountBalance;
+    private final CreateAccount createAccount;
     private final CreateTransactionRepository createTransactionRepository;
 
-    public CreateTransaction(GetAccount getAccount, UpdateAccountBalance updateAccountBalance, CreateTransactionRepository createTransactionRepository) {
+    public CreateTransaction(GetAccount getAccount, CreateAccount createAccount, CreateTransactionRepository createTransactionRepository) {
         this.getAccount = getAccount;
-        this.updateAccountBalance = updateAccountBalance;
+        this.createAccount = createAccount;
         this.createTransactionRepository = createTransactionRepository;
     }
 
     @Transactional
-    public void create(CreateTransactionRequest request) {
+    public AccountDTO create(CreateTransactionRequest request) {
         validateRequest(request);
 
         Account account = getAccount.getByAccountNumber(request.accountNumber());
@@ -33,9 +36,9 @@ public class CreateTransaction {
         Transaction transaction = new Transaction(1, PaymentType.getBySymbol(request.paymentType()), request.value());
 
         account.addTransaction(transaction);
-        // TODO EXCEPTION HANDLER PARA TRATAR EXCECOES
+
         createTransactionRepository.save(transaction);
-        updateAccountBalance.update(account);
+        return createAccount.update(account);
     }
 
     private void validateRequest(CreateTransactionRequest request) {
@@ -50,7 +53,7 @@ public class CreateTransaction {
         PaymentType paymentType = PaymentType.getBySymbol(request.paymentType());
 
         if (Objects.isNull(paymentType)) {
-            throw new IllegalArgumentException("Invalid payment type!");
+            throw new IllegalArgumentException("Invalid payment type! Values can be " + Arrays.stream(PaymentType.values()).map(PaymentType::getSymbol));
         }
     }
 }

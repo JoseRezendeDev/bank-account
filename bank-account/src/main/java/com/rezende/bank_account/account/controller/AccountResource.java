@@ -25,8 +25,8 @@ public class AccountResource {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createAccount(@RequestBody CreateAccountRequest createAccountRequest) {
-        createAccount.create(createAccountRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<AccountDTO> createAccount(@RequestBody CreateAccountRequest createAccountRequest) {
+        AccountDTO createdAccount = createAccount.create(createAccountRequest);
+        return ResponseEntity.status(201).body(createdAccount);
     }
 }
